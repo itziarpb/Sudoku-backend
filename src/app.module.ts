@@ -13,22 +13,33 @@ import * as path from 'path';
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
-      useFactory: (configService: ConfigService) => ({
-        type: 'postgres',
-        host: configService.get<string>('POSTGRES_HOST'),
-        port: configService.get<number>('POSTGRES_PORT'),
-        username: configService.get<string>('POSTGRES_USER'),
-        password: configService.get<string>('POSTGRES_PASSWORD'),
-        database: configService.get<string>('POSTGRES_DB'),
-        entities: [path.join(__dirname, '**', '*.entity{.ts,.js}')],
-        synchronize: false,
-        retryDelay: 3000,
-        retryAttempts: 10,
-      }),
+      useFactory: (configService: ConfigService) => {
+        // Add this console.log to check the environment variables
+        console.log({
+          host: configService.get<string>('POSTGRES_HOST'),
+          port: configService.get<number>('POSTGRES_PORT'),
+          username: configService.get<string>('POSTGRES_USER'),
+          password: configService.get<string>('POSTGRES_PASSWORD'),
+          database: configService.get<string>('POSTGRES_DB'),
+        });
+
+        // Return the TypeORM configuration
+        return {
+          type: 'postgres',
+          host: configService.get<string>('POSTGRES_HOST'),
+          port: configService.get<number>('POSTGRES_PORT'),
+          username: configService.get<string>('POSTGRES_USER'),
+          password: configService.get<string>('POSTGRES_PASSWORD'),
+          database: configService.get<string>('POSTGRES_DB'),
+          entities: [path.join(__dirname, '**', '*.entity{.ts,.js}')],
+          synchronize: false,
+          retryDelay: 3000,
+          retryAttempts: 10,
+        };
+      },
     }),
   ],
   controllers: [AppController],
   providers: [AppService],
 })
 export class AppModule {}
-
